@@ -186,7 +186,7 @@ export function iwaitImpl(
   // Initial delay before starting
   setTimeout(() => {
     // Start periodic checking
-    const intervalId = setInterval(checkResources, interval);
+    intervalId = setInterval(checkResources, interval);
     
     // Do first check
     checkResources();
