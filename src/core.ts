@@ -10,9 +10,9 @@ import type { WaitOptions, ResourceState, WaitResult } from './types';
  * @param options Configuration options
  * @returns Promise resolving when resources are ready according to strategy
  */
-export function waitFor(options: WaitOptions): Promise<WaitResult> {
+export function iwait(options: WaitOptions): Promise<WaitResult> {
   return new Promise((resolve, reject) => {
-    waitForImpl(options, (err, result) => {
+    iwaitImpl(options, (err, result) => {
       if (err) {
         reject(err);
       } else {
@@ -25,7 +25,7 @@ export function waitFor(options: WaitOptions): Promise<WaitResult> {
 /**
  * Implementation of the wait functionality with callback support
  */
-export function waitForImpl(
+export function iwaitImpl(
   options: WaitOptions, 
   callback: (err?: Error, result?: WaitResult) => void
 ): void {

@@ -21,4 +21,31 @@ export async function checkDir(dirPath: string, options: WaitOptions): Promise<b
     }
     
     if (verbose) {
-      console.debug(`Directory exists:
+      console.debug(`Directory exists: ${dirPath}`);
+    }
+    
+    // If dirNotEmpty is true, check if the directory contains files
+    if (dirNotEmpty) {
+      const files = await fs.readdir(dirPath);
+      if (files.length > 0) {
+        if (verbose) {
+          console.debug(`Directory ${dirPath} is not empty, contains: ${files.join(', ')}`);
+        }
+        return true;
+      } else {
+        if (verbose) {
+          console.debug(`Directory ${dirPath} is empty`);
+        }
+        return false;
+      }
+    }
+    
+    // If dirNotEmpty is false, just return true if the directory exists
+    return true;
+  } catch (error) {
+    if (verbose) {
+      console.debug(`Directory ${dirPath} does not exist or cannot be accessed`, error);
+    }
+    return false;
+  }
+}
