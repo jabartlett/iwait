@@ -167,7 +167,7 @@ async function checkHttp2(
           if (timeoutId) clearTimeout(timeoutId);
 
           const statusCodeHeader = headers[':status'];
-          const statusCode = statusCodeHeader !== undefined ? parseInt(statusCodeHeader, 10) : undefined;
+          const statusCode = typeof statusCodeHeader === 'string' ? parseInt(statusCodeHeader, 10) : undefined;
 
           if (verbose) {
             console.debug(`HTTP/2 ${method.toUpperCase()} request to ${url} returned status ${statusCode}`);
