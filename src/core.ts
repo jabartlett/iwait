@@ -186,6 +186,23 @@ export function iwaitImpl(
     }
   };
   
+  // Store the original checkResources function
+  const originalCheckResources = checkResources;
+  
+  // Modify checkResources directly if needed
+  checkResources = async () => {
+    await originalCheckResources();
+    
+    // For race, we stop after first success
+    if (Object.values(resourceStates).some(s => s.ready)) {
+      if (timeoutId) clearTimeout(timeoutId);
+      clearInterval(intervalId);
+      
+      const result = buildResult();
+      callback(undefined, result);
+    }
+  };
+  
   // Initial delay before starting
   setTimeout(() => {
     // Start periodic checking
@@ -193,23 +210,6 @@ export function iwaitImpl(
     
     // Do first check
     checkResources();
-    
-    // Handle race strategy (stop after first success)
-    if (strategy === 'race') {
-      const originalCheckResources = checkResources;
-      let checkResources = async () => {
-        await originalCheckResources();
-        
-        // For race, we stop after first success
-        if (Object.values(resourceStates).some(s => s.ready)) {
-          if (timeoutId) clearTimeout(timeoutId);
-          clearInterval(intervalId);
-          
-          const result = buildResult();
-          callback(undefined, result);
-        }
-      };
-    }
   }, delay);
 }
 
