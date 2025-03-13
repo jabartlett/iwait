@@ -87,6 +87,9 @@ export function iwaitImpl(
     }, timeout);
   }
   
+  // Declare intervalId at the appropriate scope
+  let intervalId: NodeJS.Timeout | undefined;
+  
   // Helper to check if we're done based on strategy
   const checkCompletion = (): boolean => {
     const states = Object.values(resourceStates);
@@ -194,7 +197,7 @@ export function iwaitImpl(
     // Handle race strategy (stop after first success)
     if (strategy === 'race') {
       const originalCheckResources = checkResources;
-      checkResources = async () => {
+      let checkResources = async () => {
         await originalCheckResources();
         
         // For race, we stop after first success
