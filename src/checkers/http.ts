@@ -94,7 +94,7 @@ export async function checkHttp(
         res.on('data', () => { });
 
         // Validate the status code
-        const validStatus = validateStatus ? validateStatus(statusCode || 0) : statusCode! >= 200 && statusCode! < 300;
+        const validStatus = validateStatus ? validateStatus(statusCode ?? 0) : (statusCode !== undefined && statusCode >= 200 && statusCode < 300);
         resolve(validStatus);
       });
 
@@ -169,13 +169,12 @@ async function checkHttp2(
           const statusCodeHeader = headers[':status'];
           const statusCode = statusCodeHeader !== undefined ? parseInt(statusCodeHeader, 10) : undefined;
 
-
           if (verbose) {
             console.debug(`HTTP/2 ${method.toUpperCase()} request to ${url} returned status ${statusCode}`);
           }
 
           // Validate the status code
-          const validStatus = validateStatus ? validateStatus(statusCode) : statusCode >= 200 && statusCode < 300;
+          const validStatus = validateStatus ? validateStatus(statusCode ?? 0) : (statusCode !== undefined && statusCode >= 200 && statusCode < 300);
 
           req.on('end', () => {
             client.close();
