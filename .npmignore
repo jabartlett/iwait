@@ -1,0 +1,30 @@
+# Source
+src/
+
+# Tests
+__tests__/
+*.test.ts
+*.spec.ts
+coverage/
+
+# Build tools
+.github/
+.vscode/
+.gitignore
+.travis.yml
+tsconfig.json
+jest.config.js
+.eslintrc.js
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+.env.*
+
+# Misc
+.DS_Store
+.idea/
+*.tgz
