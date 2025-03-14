@@ -62,11 +62,15 @@ The `iwait` function accepts the following configuration options:
 | `delay`          | `number`        | `0`          | Delay before starting the checks (in ms).                                   |
 | `interval`       | `number`        | `250`        | Interval between resource checks (in ms).                                   |
 | `timeout`        | `number`        | `Infinity`   | Maximum time to wait for resources (in ms).                                 |
-| `strategy`       | `'all' | 'any' | 'race' | 'threshold'` | `'all'` | Strategy for determining success.                     |
+| `strategy`       | `all` `any` `race` `threshold` | `'all'` | Strategy for determining success.                     |
 | `log`            | `boolean`       | `false`      | Enable basic logging to the console.                                        |
 | `verbose`        | `boolean`       | `false`      | Enable verbose debugging logs.                                              |
 | `reverse`        | `boolean`       | `false`      | Reverse the readiness condition (e.g., wait for resources to become unavailable). |
 | `signal`         | `AbortSignal`   | `undefined`  | Abort signal for canceling the wait.                                        |
+
+// Resource types we can wait for
+export type ResourceType = 'file' | 'http' | 'https' | 'http-get' | 'https-get' | 'tcp' | 'socket' | 'ping' | 'dir';
+
 
 ### Advanced Options
 
