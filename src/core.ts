@@ -1,8 +1,7 @@
-// src/core.ts
 import { parseResources } from './parser';
 import { checkResource } from './checkers';
 import { TimeoutError, AbortError } from './errors';
-import type { WaitOptions, ResourceState, WaitResult } from './types';
+import type { WaitOptions, ResourceState, WaitResult, NormalizedWaitOptions } from './types';
 
 /**
  * Waits for resources to become available or unavailable
@@ -61,13 +60,16 @@ export function iwaitImpl(
     };
   });
   
+  // Declare intervalId here to fix type error
+  let intervalId: NodeJS.Timeout | undefined;
+  
   // Setup abort handler if signal provided
   if (signal) {
     signal.addEventListener('abort', () => {
       const error = new AbortError('Operation aborted');
       callback(error);
-      clearTimeout(timeoutId);
-      clearInterval(intervalId);
+      if (timeoutId) clearTimeout(timeoutId);
+      if (intervalId) clearInterval(intervalId);
     });
   }
   
@@ -75,7 +77,7 @@ export function iwaitImpl(
   let timeoutId: NodeJS.Timeout | undefined;
   if (timeout && timeout !== Infinity) {
     timeoutId = setTimeout(() => {
-      clearInterval(intervalId);
+      if (intervalId) clearInterval(intervalId);
       const notReady = Object.values(resourceStates)
         .filter(r => !r.ready)
         .map(r => r.resource);
@@ -86,9 +88,6 @@ export function iwaitImpl(
       callback(error);
     }, timeout);
   }
-  
-  // Declare intervalId at the appropriate scope
-  let intervalId: NodeJS.Timeout | undefined;
   
   // Helper to check if we're done based on strategy
   const checkCompletion = (): boolean => {
@@ -146,7 +145,7 @@ export function iwaitImpl(
   };
   
   // Function to check all resources
-  const checkResources = async () => {
+  let checkResources = async () => {
     const descriptors = parseResources(resources);
     const checks = descriptors.map(async (descriptor, index) => {
       const resource = resources[index];
@@ -179,7 +178,7 @@ export function iwaitImpl(
     
     if (checkCompletion()) {
       if (timeoutId) clearTimeout(timeoutId);
-      clearInterval(intervalId);
+      if (intervalId) clearInterval(intervalId);
       
       const result = buildResult();
       callback(undefined, result);
@@ -189,7 +188,9 @@ export function iwaitImpl(
   // Initial delay before starting
   setTimeout(() => {
     // Start periodic checking
-    intervalId = setInterval(checkResources, interval);
+    intervalId = setInterval(() => {
+      checkResources();
+    }, interval);
     
     // Do first check
     checkResources();
@@ -197,13 +198,13 @@ export function iwaitImpl(
     // Handle race strategy (stop after first success)
     if (strategy === 'race') {
       const originalCheckResources = checkResources;
-      let checkResources = async () => {
+      checkResources = async () => {
         await originalCheckResources();
         
         // For race, we stop after first success
         if (Object.values(resourceStates).some(s => s.ready)) {
           if (timeoutId) clearTimeout(timeoutId);
-          clearInterval(intervalId);
+          if (intervalId) clearInterval(intervalId);
           
           const result = buildResult();
           callback(undefined, result);
@@ -216,7 +217,7 @@ export function iwaitImpl(
 /**
  * Normalize and apply defaults to options
  */
-function normalizeOptions(options: WaitOptions): Required<WaitOptions> {
+function normalizeOptions(options: WaitOptions): NormalizedWaitOptions {
   return {
     resources: options.resources,
     delay: options.delay ?? 0,

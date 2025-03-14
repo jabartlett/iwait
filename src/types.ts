@@ -13,6 +13,15 @@ export interface ResourceDescriptor {
   originalUri: string;
 }
 
+// Import AbortSignal if it's not defined in the global scope
+declare global {
+  interface AbortSignal {
+    readonly aborted: boolean;
+    addEventListener(type: 'abort', listener: () => void): void;
+    removeEventListener(type: 'abort', listener: () => void): void;
+  }
+}
+
 // Configuration options
 export interface WaitOptions {
   resources: string[];
@@ -44,6 +53,11 @@ export interface WaitOptions {
   dirNotEmpty?: boolean;
   
   // Signal for abort controller
+  signal?: AbortSignal;
+}
+
+// Normalized options with all fields required except signal
+export interface NormalizedWaitOptions extends Omit<Required<WaitOptions>, 'signal'> {
   signal?: AbortSignal;
 }
 
