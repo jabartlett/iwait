@@ -1,6 +1,6 @@
 {
-    "name": "iwait",
-    "version": "0.1.0",
+    "name": "@stormcrow/iwait",
+    "version": "0.1.1",
     "description": "A utility for handling asynchronous operations",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -10,7 +10,7 @@
         "LICENSE"
     ],
     "scripts": {
-        "build": "tsc",
+        "build": "tsc --project tsconfig.json",
         "clean": "rimraf dist",
         "prebuild": "npm run clean",
         "prepublishOnly": "npm run build",
@@ -23,7 +23,7 @@
         "promise",
         "typescript"
     ],
-    "author": "Your Name <your.email@example.com>",
+    "author": "Justin Bartlett <justinbartlettconsultant@gmail.com>",
     "license": "MIT",
     "devDependencies": {
         "@types/jest": "^29.5.5",

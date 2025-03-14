@@ -1,4 +1,4 @@
-import type { WaitOptions } from './types';
+import type { NormalizedWaitOptions, WaitOptions } from './types';
 
 /**
  * Parse and normalize options for waiting
@@ -6,7 +6,7 @@ import type { WaitOptions } from './types';
  * @param options Raw options to be parsed
  * @returns Normalized WaitOptions
  */
-export function parseOptions(options: Partial<WaitOptions>): Required<WaitOptions> {
+export function parseOptions(options: WaitOptions): NormalizedWaitOptions {
   return {
     resources: options.resources || [],
     delay: options.delay ?? 0,
